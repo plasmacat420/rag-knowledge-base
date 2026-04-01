@@ -1,0 +1,22 @@
+version: "3.9"
+services:
+  backend:
+    image: ghcr.io/plasmacat420/rag-knowledge-base-backend:latest
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./uploads:/app/uploads
+      - ./chroma_db:/app/chroma_db
+    env_file: .env
+    restart: unless-stopped
+
+  frontend:
+    image: nginx:alpine
+    volumes:
+      - ./frontend/dist:/usr/share/nginx/html
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    restart: unless-stopped
