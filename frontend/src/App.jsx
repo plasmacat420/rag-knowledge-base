@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import { Github } from 'lucide-react'
+import { useState, useEffect } from 'react'
+import { Github, Info, X } from 'lucide-react'
 import UploadPanel from './components/UploadPanel'
 import DocumentList from './components/DocumentList'
 import ChatPanel from './components/ChatPanel'
@@ -7,7 +7,15 @@ import { useDocuments } from './hooks/useDocuments'
 
 export default function App() {
   const [selectedDocIds, setSelectedDocIds] = useState([])
+  const [bannerDismissed, setBannerDismissed] = useState(false)
+  const [backendOnline, setBackendOnline] = useState(null)
   const { documents, loading, uploadDocument, deleteDocument, refetch } = useDocuments()
+
+  useEffect(() => {
+    fetch('/api/health')
+      .then((r) => r.ok && setBackendOnline(true))
+      .catch(() => setBackendOnline(false))
+  }, [])
 
   const toggleDoc = (id) => {
     setSelectedDocIds((prev) =>
@@ -22,6 +30,27 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-gray-950 text-gray-100 flex flex-col">
+      {/* Demo banner */}
+      {backendOnline === false && !bannerDismissed && (
+        <div className="bg-amber-950/60 border-b border-amber-800/50 px-4 py-2.5 flex items-center gap-3 text-sm text-amber-300">
+          <Info size={15} className="flex-shrink-0" />
+          <span className="flex-1">
+            <strong>Live demo — frontend only.</strong> The backend (FastAPI + ChromaDB + OpenAI) runs locally.{' '}
+            <a
+              href="https://github.com/plasmacat420/rag-knowledge-base#quick-start"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline hover:text-amber-100"
+            >
+              See setup instructions →
+            </a>
+          </span>
+          <button onClick={() => setBannerDismissed(true)} className="text-amber-500 hover:text-amber-200 flex-shrink-0">
+            <X size={15} />
+          </button>
+        </div>
+      )}
+
       {/* Header */}
       <header className="bg-gray-900 border-b border-gray-800 px-6 py-4 flex items-center justify-between shadow-lg">
         <div>
