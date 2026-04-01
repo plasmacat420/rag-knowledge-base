@@ -13,7 +13,7 @@ export default function App() {
 
   useEffect(() => {
     fetch('/api/health')
-      .then((r) => r.ok && setBackendOnline(true))
+      .then((r) => setBackendOnline(r.ok))
       .catch(() => setBackendOnline(false))
   }, [])
 
